@@ -17,5 +17,7 @@ class MarloIcons {
   static const String reports = 'assets/icons/reports.svg';
   static const String transactionMenu = 'assets/icons/transaciton_menu.svg';
   static const String transaction = 'assets/icons/transaction.svg';
-  static const String vessel_icon = 'assets/icons/Vessel icon.svg';
+  static const String vesselIcon = 'assets/icons/Vessel icon.svg';
+  static const String bell = 'assets/icons/bell.svg';
+  static const String payMenu = 'assets/icons/pay_menu.svg';
 }
