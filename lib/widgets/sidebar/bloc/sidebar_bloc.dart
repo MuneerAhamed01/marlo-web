@@ -5,6 +5,12 @@ part 'sidebar_state.dart';
 
 class SidebarBloc extends Bloc<SidebarEvent, SidebarState> {
   SidebarBloc() : super(SidebarInitial()) {
-    on<SidebarEvent>((event, emit) {});
+    on<SidebarCollapseEvent>(_onHoverSideBar);
   }
+
+  _onHoverSideBar(
+    SidebarCollapseEvent event,
+    Emitter<SidebarState> emit,
+  ) =>
+      emit(SideBarCollapseState(isCollapsed: event.isCollapsed));
 }

@@ -23,7 +23,7 @@ List<SidebarMenu> menus = [
     items: [
       SideBarMenuItems(icon: MarloIcons.home, title: 'Home', route: ''),
       SideBarMenuItems(
-          icon: MarloIcons.transactionMenu, title: 'Transactions', route: ''),
+          icon: MarloIcons.transaction, title: 'Transactions', route: ''),
     ],
   ),
   SidebarMenu(
@@ -63,6 +63,6 @@ List<SidebarMenu> menus = [
     ],
   ),
   SidebarMenu(title: 'Tools', items: [
-    SideBarMenuItems(icon: MarloIcons.loans, title: 'Loans', route: ''),
+    SideBarMenuItems(icon: MarloIcons.apps, title: 'Apps', route: ''),
   ])
 ];

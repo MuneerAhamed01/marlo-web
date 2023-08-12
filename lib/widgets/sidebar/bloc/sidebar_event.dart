@@ -1,3 +1,10 @@
 part of 'sidebar_bloc.dart';
 
-class SidebarEvent {}
+abstract class SidebarEvent {}
+
+class SidebarCollapseEvent extends SidebarEvent{
+  final bool isCollapsed;
+
+  SidebarCollapseEvent(this.isCollapsed);
+
+}
