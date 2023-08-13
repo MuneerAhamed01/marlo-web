@@ -15,6 +15,7 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MarloColors.backgroundColor,
       appBar: _buildAppBar(),
       body: Row(
         children: [
