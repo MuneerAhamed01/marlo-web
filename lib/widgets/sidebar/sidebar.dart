@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sample/utils/colors.dart';
+import 'package:sample/utils/styles.dart';
 import 'package:sample/widgets/sidebar/bloc/sidebar_bloc.dart';
 import 'package:sample/widgets/sidebar/sidebar_menu.dart';
 import 'package:sample/widgets/sidebar/utils/sidebar_menu_items.dart';
 
 class SideBar extends StatelessWidget {
-  const SideBar({super.key});
-
+  const SideBar({super.key, required this.onTapItem, this.initSelectedRoute});
+  final Function(String) onTapItem;
+  final String? initSelectedRoute;
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -45,25 +47,28 @@ class SideBar extends StatelessWidget {
   }
 
   Widget _buildSideBar(SidebarMenu item) {
-    return SideBarMenuWidget(item: item);
+    return SideBarMenuWidget(item: item, onTap: onTapItem,initSelectedRoute: initSelectedRoute);
   }
 
   Container _buildKYC() {
     return Container(
       color: MarloColors.kycBackground,
       height: 88,
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           //TODO: Change style
           Flexible(
             child: Text(
               'Submit KYC (10%)',
-              style: TextStyle(color: Colors.white),
+              style: Styles.primary.copyWith(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w200),
             ),
           ),
-          SizedBox(width: 2),
-          Icon(
+          const SizedBox(width: 2),
+          const Icon(
             Icons.arrow_forward_ios,
             color: Colors.white,
             size: 16,

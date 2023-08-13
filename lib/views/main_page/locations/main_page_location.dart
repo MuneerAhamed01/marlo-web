@@ -6,7 +6,7 @@ class MainPageLocation extends BeamLocation<BeamState> {
   static const String mainPath = '/';
 
   @override
-  List<Pattern> get pathPatterns => [mainPath, '$mainPath/*'];
+  List<Pattern> get pathPatterns => ["$mainPath*"];
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) {

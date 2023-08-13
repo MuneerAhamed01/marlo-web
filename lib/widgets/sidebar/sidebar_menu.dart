@@ -5,9 +5,15 @@ import 'package:sample/widgets/sidebar/menu_item.dart';
 import 'package:sample/widgets/sidebar/utils/sidebar_menu_items.dart';
 
 class SideBarMenuWidget extends StatelessWidget {
-  const SideBarMenuWidget({super.key, required this.item});
+  const SideBarMenuWidget({
+    super.key,
+    required this.item,
+    required this.onTap,
+    this.initSelectedRoute,
+  });
   final SidebarMenu item;
-
+  final Function(String) onTap;
+  final String? initSelectedRoute;
   isCollapse(BuildContext context) =>
       context.read<SidebarBloc>().state.isCollapsed;
 
@@ -24,14 +30,18 @@ class SideBarMenuWidget extends StatelessWidget {
               style: TextStyle(color: Colors.white.withOpacity(.4)),
             ),
           ),
-          const SizedBox(height: 16),
         ],
+        const SizedBox(height: 16),
         ...[for (SideBarMenuItems menu in item.items) _buildMenuItem(menu)]
       ],
     );
   }
 
   Widget _buildMenuItem(SideBarMenuItems menu) {
-    return SidebarMenuItemWidget(menu: menu);
+    return SidebarMenuItemWidget(
+      menu: menu,
+      onTap: () => onTap(menu.route),
+      selectedRoute: initSelectedRoute,
+    );
   }
 }

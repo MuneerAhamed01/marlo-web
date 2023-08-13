@@ -43,7 +43,7 @@ abstract class BaseBeamerDelegate extends BeamerDelegate {
 
   void _buildListener(
     BuildContext context,
-    BeamerDelegate delegate,
+    BeamerDelegate delegate,  
   ) {
     for (var l in _buildListeners) {
       l.call(context, delegate);

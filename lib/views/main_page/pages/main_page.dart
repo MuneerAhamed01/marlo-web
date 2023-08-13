@@ -1,18 +1,36 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sample/utils/colors.dart';
 import 'package:sample/utils/icons.dart';
+import 'package:sample/utils/styles.dart';
+import 'package:sample/views/main_page/locations/main_content_locaions.dart';
 import 'package:sample/widgets/sidebar/sidebar.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
+  static final GlobalKey<BeamerState> _nestedNavigationKey =
+      GlobalKey<BeamerState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: const Row(
-        children: [SideBar()],
+      body: Row(
+        children: [
+          SideBar(
+              onTapItem: (route) {
+                _nestedNavigationKey.currentState!.routerDelegate
+                    .beamToNamed('/$route');
+              },
+              initSelectedRoute: MainContentLocation.transaction),
+          Expanded(
+            child: Beamer(
+              key: _nestedNavigationKey,
+              routerDelegate: MainContentDelegate.instance,
+            ),
+          )
+        ],
       ),
     );
   }
@@ -40,13 +58,17 @@ class MainPage extends StatelessWidget {
       );
 
   Row _buildDropDown() {
-    return const Row(
+    return Row(
       children: [
         Text(
           'MARLO TECHNOLOGIES',
-          style: TextStyle(color: Colors.white),
+          style: Styles.primary.copyWith(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 24,
           width: 24,
           child: Center(
@@ -58,11 +80,14 @@ class MainPage extends StatelessWidget {
   }
 
   Widget _buildButton(String icon) {
-    return SizedBox(
-      height: 24,
-      width: 24,
-      child: Center(
-        child: SvgPicture.asset(icon),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: SizedBox(
+        height: 24,
+        width: 24,
+        child: Center(
+          child: SvgPicture.asset(icon),
+        ),
       ),
     );
   }

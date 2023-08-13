@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sample/routes/beamer_parser.dart';
 import 'package:sample/routes/root_delegate.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 void main() {
+  setPathUrlStrategy();
   runApp(const MyApp());
 }
 
@@ -16,13 +18,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        pageTransitionsTheme: const PageTransitionsTheme(builders: {
-          TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
-        },),
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+          },
+        ),
       ),
       routeInformationParser: BeamerParser(),
       routerDelegate: RootBeamerDelegate.instance,
