@@ -11,4 +11,7 @@ class MarloColors {
   static Color borderColor = const Color(0xff0C0E0F).withOpacity(.12);
   static const Color subTitle = Color(0xff768089);
   static const Color boxColor = Color(0xff004492);
+  static const Color euroFlagPrimary = Color(0xff0052B4);
+  static const Color singaporeSecondary = Color(0xffF0F0F0);
+  static const Color iconColor = Color(0xff75808A);
 }

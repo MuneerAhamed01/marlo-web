@@ -28,7 +28,6 @@ class MarloButton extends StatelessWidget {
   final Direction axis;
   final ButtonSize size;
 
-  bool get _hasIcon => svg != null || icon != null;
 
   @override
   Widget build(BuildContext context) {

@@ -6,10 +6,12 @@ import 'package:sample/utils/icons.dart';
 import 'package:sample/utils/styles.dart';
 import 'package:sample/widgets/filter_list/filter_list_widget.dart';
 import 'package:sample/widgets/payout_button.dart';
+import 'package:sample/widgets/semi_circle.dart';
 import 'package:sample/widgets/transaction_table/models/table_colums.dart';
 import 'package:sample/widgets/transaction_table/transaction_table.dart';
 
 import '../../widgets/marlo_button.dart';
+import 'utils/transaction_country.dart';
 
 class TransactionPage extends StatelessWidget {
   const TransactionPage({super.key});
@@ -23,43 +25,14 @@ class TransactionPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             decoration: BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(color: Colors.black.withOpacity(.12)))),
-            height: 88,
-            child: Row(
-              children: [
-                SvgPicture.asset(MarloIcons.transactionMenu),
-                const SizedBox(width: 16),
-                Text(
-                  'Transaction /',
-                  style: Styles.primary.copyWith(
-                    color: MarloColors.primary,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 22,
-                  ),
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.black.withOpacity(.12),
                 ),
-                const SizedBox(width: 16),
-                MarloButton(
-                  onTap: () {},
-                  title: "MARLO",
-                ),
-                const SizedBox(width: 28),
-                Text(
-                  'HDFC · 5879',
-                  style: Styles.primary
-                      .copyWith(fontWeight: FontWeight.w600, fontSize: 14),
-                ),
-                const SizedBox(width: 28),
-                MarloButton(
-                  onTap: () {},
-                  title: "Link account",
-                  style: MarloButtonStyle.secondary,
-                  icon: Icons.add,
-                ),
-                const Spacer(),
-                const PayoutButton(),
-              ],
+              ),
             ),
+            height: 88,
+            child: _header(),
           ),
           const SizedBox(height: 32),
           SizedBox(
@@ -69,7 +42,7 @@ class TransactionPage extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemBuilder: _buildCountryPounds,
               separatorBuilder: (_, __) => const SizedBox(width: 16),
-              itemCount: 10,
+              itemCount: getTransactionCountry().length + 1,
             ),
           ),
           const SizedBox(height: 24),
@@ -89,51 +62,110 @@ class TransactionPage extends StatelessWidget {
     );
   }
 
+  Row _header() {
+    return Row(
+      children: [
+        SvgPicture.asset(MarloIcons.transactionMenu),
+        const SizedBox(width: 16),
+        Text(
+          'Transaction /',
+          style: Styles.primary.copyWith(
+            color: MarloColors.primary,
+            fontWeight: FontWeight.w600,
+            fontSize: 22,
+          ),
+        ),
+        const SizedBox(width: 16),
+        MarloButton(
+          onTap: () {},
+          title: "MARLO",
+        ),
+        const SizedBox(width: 28),
+        Text(
+          'HDFC · 5879',
+          style: Styles.primary
+              .copyWith(fontWeight: FontWeight.w600, fontSize: 14),
+        ),
+        const SizedBox(width: 28),
+        MarloButton(
+          onTap: () {},
+          title: "Link account",
+          style: MarloButtonStyle.secondary,
+          icon: Icons.add,
+        ),
+        const Spacer(),
+        const PayoutButton(),
+      ],
+    );
+  }
+
   Padding _buildCountryPounds(BuildContext context, int index) {
     return Padding(
       padding: EdgeInsets.only(
         left: index == 0 ? 24 : 0,
-        right: 9 == index ? 24 : 0,
+        right: getTransactionCountry().length == index ? 24 : 0,
       ),
-      child: Container(
-        width: 140,
-        padding: const EdgeInsets.all(16).copyWith(bottom: 0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: Colors.black.withOpacity(.10),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(CountryFlags.gpb),
-                  radius: 27,
-                ),
-                Spacer(),
-                Text('USD')
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '15,256,486.00',
-              style: Styles.primary.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Main',
-              style: Styles.primary.copyWith(
-                fontWeight: FontWeight.w400,
-                color: MarloColors.subTitle,
+      child: index == getTransactionCountry().length
+          ? _buildAddNewCountry()
+          : _buildTransaction(index),
+    );
+  }
+
+  Widget _buildFlags(String country) {
+    if (country == 'EUR') {
+      return _buildEuroFlag();
+    }
+    if (country == 'SGD') {
+      return _buildSingaporeFlag();
+    }
+    return _flagInAsset(country);
+  }
+
+  Stack _buildSingaporeFlag() {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        CircleAvatar(
+          radius: 27,
+          backgroundColor: Colors.red,
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: SizedBox(
+                height: 16,
+                width: 21,
+                child: SvgPicture.asset(CountryFlags.singStar),
               ),
             ),
-          ],
+          ),
         ),
+        Container(
+          height: 27,
+          width: 54,
+          color: Colors.white,
+        ),
+        const RotatedBox(
+          quarterTurns: 2,
+          child: MyArc(diameter: 54),
+        )
+      ],
+    );
+  }
+
+  Widget _flagInAsset(String image) {
+    return CircleAvatar(
+      backgroundImage: NetworkImage(image),
+      radius: 27,
+    );
+  }
+
+  Widget _buildEuroFlag() {
+    return CircleAvatar(
+      backgroundColor: MarloColors.euroFlagPrimary,
+      radius: 27,
+      child: Center(
+        child: SvgPicture.asset(CountryFlags.euroStar),
       ),
     );
   }
@@ -142,6 +174,94 @@ class TransactionPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: child,
+    );
+  }
+
+  Container _buildAddNewCountry() {
+    return Container(
+      width: 140,
+      padding: const EdgeInsets.all(16).copyWith(bottom: 0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Colors.black.withOpacity(.10),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const CircleAvatar(
+            backgroundColor: MarloColors.singaporeSecondary,
+            radius: 27,
+            child: Center(
+              child: Icon(
+                Icons.add,
+                color: MarloColors.iconColor,
+                size: 27,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Add new',
+            style: Styles.primary.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Global account',
+            style: Styles.primary.copyWith(
+              fontWeight: FontWeight.w400,
+              color: MarloColors.subTitle,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container _buildTransaction(int index) {
+    final transaction = getTransactionCountry()[index];
+
+    return Container(
+      width: 140,
+      padding: const EdgeInsets.all(16).copyWith(bottom: 0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Colors.black.withOpacity(.10),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (transaction.flag != null)
+                _flagInAsset(transaction.flag!)
+              else
+                _buildFlags(transaction.name),
+              const Spacer(),
+              Text(transaction.name)
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            transaction.amount,
+            style: Styles.primary.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            transaction.sub,
+            style: Styles.primary.copyWith(
+              fontWeight: FontWeight.w400,
+              color: MarloColors.subTitle,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -154,5 +274,5 @@ final rows = [
       status: TransactionStatus.processed,
       source: 'Payout',
       createdBy: DateTime.now(),
-    )
+    ),
 ];
