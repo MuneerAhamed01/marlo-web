@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sample/services/transaction_services.dart';
 import 'package:sample/utils/colors.dart';
 import 'package:sample/utils/flags.dart';
 import 'package:sample/utils/icons.dart';
@@ -18,6 +19,7 @@ class TransactionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TransactionService.instance.getTransaction();
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

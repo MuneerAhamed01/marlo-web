@@ -41,6 +41,7 @@ dependencies:
   google_fonts: ^5.1.0
   url_strategy: ^0.2.0
   intl: ^0.18.1
+  dio: ^5.3.2
 
 dev_dependencies:
   flutter_test:
