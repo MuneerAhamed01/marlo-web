@@ -48,3 +48,4 @@ List<TransactionByCountry> getTransactionCountry() => [
         sub: 'Salary',
       ),
     ];
+List<String> get currencies => ["SGD", "USD", "EUR", "GBP"];

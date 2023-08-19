@@ -91,17 +91,30 @@ class TransactionPage extends StatelessWidget {
                 PaginationMenu(
                   title: 'Currencies',
                   menuItems: const [5, 10, 15],
-                  onTap: (val) {},
+                  onTap: (val) {
+                    context
+                        .read<TransactionBloc>()
+                        .add(ChangePageSizeEvent(val));
+                  },
                   selectedNumber: state.paginatingPage,
                 ),
                 const SizedBox(width: 10),
                 if (!state.isLast)
                   GestureDetector(
+                    behavior: HitTestBehavior.translucent,
                     onTap: () {
                       context.read<TransactionBloc>().add(FetchNextEvent());
                     },
-                    child: const Row(
-                      children: [Text('Next'), Icon(Icons.arrow_forward_ios)],
+                    child: Row(
+                      children: [
+                        Text(
+                          'Next',
+                          style: Styles.primary
+                              .copyWith(color: MarloColors.buttonPrimary),
+                        ),
+                        const Icon(Icons.arrow_forward_ios,
+                            size: 14, color: MarloColors.buttonPrimary)
+                      ],
                     ),
                   )
               ],

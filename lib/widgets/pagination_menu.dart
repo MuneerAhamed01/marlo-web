@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sample/utils/colors.dart';
 import 'package:sample/utils/styles.dart';
-import 'package:sample/widgets/marlo_button.dart';
 
 //TODO: Copy of action menu need to mege with [ActionMenu]
 
@@ -33,7 +32,7 @@ class _PaginationMenuState extends State<PaginationMenu> {
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: GestureDetector(
+      child: InkWell(
         onTap: () {
           _toggleOverlay();
         },
