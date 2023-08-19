@@ -26,9 +26,9 @@ class _SidebarMenuItemWidgetState extends State<SidebarMenuItemWidget> {
   bool _isHovered = false;
   bool get _isCollapse => context.read<SidebarBloc>().state.isCollapsed;
 
-  bool get _isColorChanged => _isHovered || widget.selectedRoute == widget.menu.route;
+  bool get _isColorChanged =>
+      _isHovered || widget.selectedRoute == widget.menu.route;
 
- 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -63,6 +63,7 @@ class _SidebarMenuItemWidgetState extends State<SidebarMenuItemWidget> {
                       style: Styles.primary.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w500,
+                          overflow: TextOverflow.ellipsis,
                           fontSize: 14)),
                 )
               ]

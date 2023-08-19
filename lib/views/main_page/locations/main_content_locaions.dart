@@ -1,7 +1,9 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sample/routes/base_beamer_delegate.dart';
 import 'package:sample/routes/other_locations.dart';
+import 'package:sample/views/transaction_page/bloc/transaction_bloc_bloc.dart';
 import 'package:sample/views/transaction_page/transaction_page.dart';
 
 class MainContentLocation extends BeamLocation<BeamState> {
@@ -17,11 +19,14 @@ class MainContentLocation extends BeamLocation<BeamState> {
 
   List<BeamPage> _buildTransaction() {
     return [
-      const BeamPage(
-        key: ValueKey(transaction),
+      BeamPage(
+        key: const ValueKey(transaction),
         name: transactionPath,
         title: transaction,
-        child: TransactionPage(),
+        child: BlocProvider(
+          create: (_) => TransactionBloc(),
+          child: const TransactionPage(),
+        ),
       )
     ];
   }

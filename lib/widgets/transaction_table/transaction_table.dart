@@ -58,12 +58,23 @@ class MarloTable extends StatelessWidget {
                     child: _TransactionStatus(status: rows[i].status),
                   ),
                   Expanded(
-                    child: _buildRowText(rows[i].source),
+                    child: Text(
+                      rows[i].source,
+                      style: Styles.primary.copyWith(
+                          fontWeight: FontWeight.w400,
+                          color: MarloColors.subTitle,
+                          fontSize: 14),
+                    ),
                   ),
                   Expanded(
-                    flex: 2,
-                    child: _buildRowText(_parseDateString(rows[i].createdBy)),
-                  )
+                      flex: 2,
+                      child: Text(
+                        _parseDateString(rows[i].createdBy),
+                        style: Styles.primary.copyWith(
+                            fontWeight: FontWeight.w400,
+                            color: MarloColors.subTitle,
+                            fontSize: 14),
+                      ))
                 ],
               ),
             )
@@ -80,8 +91,8 @@ class MarloTable extends StatelessWidget {
   Text _buildRowText(String text) {
     return Text(
       text,
-      style: Styles.primary
-          .copyWith(fontWeight: FontWeight.w600, color: MarloColors.subTitle),
+      style: Styles.primary.copyWith(
+          fontWeight: FontWeight.w400, color: MarloColors.secondaryLight),
     );
   }
 }
@@ -154,6 +165,7 @@ class _TransactionName extends StatelessWidget {
           name,
           style: Styles.primary.copyWith(
             fontWeight: FontWeight.w600,
+            color: MarloColors.secondaryLight,
           ),
         )
       ],

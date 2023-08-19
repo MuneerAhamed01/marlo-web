@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:sample/services/transaction_services.dart';
 import 'package:sample/utils/colors.dart';
 import 'package:sample/utils/flags.dart';
 import 'package:sample/utils/icons.dart';
 import 'package:sample/utils/styles.dart';
+import 'package:sample/views/transaction_page/bloc/transaction_bloc_bloc.dart';
 import 'package:sample/widgets/filter_list/filter_list_widget.dart';
+import 'package:sample/widgets/pagination_menu.dart';
 import 'package:sample/widgets/payout_button.dart';
 import 'package:sample/widgets/semi_circle.dart';
 import 'package:sample/widgets/transaction_table/models/table_colums.dart';
 import 'package:sample/widgets/transaction_table/transaction_table.dart';
 
 import '../../widgets/marlo_button.dart';
+import 'model/transaction_model.dart';
 import 'utils/transaction_country.dart';
 
 class TransactionPage extends StatelessWidget {
@@ -19,7 +22,24 @@ class TransactionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TransactionService.instance.getTransaction();
+    return BlocBuilder<TransactionBloc, TransactionBlocState>(
+      builder: (context, state) {
+        if (state is LoadingTransactionState) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state.filteredList.isEmpty) {
+          return const Center(child: Text('Error'));
+        }
+        if (state is LoadedTransaction && state.filteredList.isNotEmpty) {
+          return _buildLayout(state, context);
+        }
+        return const Center(child: Text('Error'));
+      },
+    );
+  }
+
+  SingleChildScrollView _buildLayout(
+      LoadedTransaction state, BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +78,36 @@ class TransactionPage extends StatelessWidget {
           const SizedBox(height: 16),
           _wrapWithPadding(const FilterListWidget()),
           const SizedBox(height: 72),
-          _wrapWithPadding(MarloTable(rows: rows))
+          _wrapWithPadding(
+            MarloTable(
+              rows: transactionToTableColum(state.filteredList),
+            ),
+          ),
+          const SizedBox(height: 24),
+          _wrapWithPadding(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                PaginationMenu(
+                  title: 'Currencies',
+                  menuItems: const [5, 10, 15],
+                  onTap: (val) {},
+                  selectedNumber: state.paginatingPage,
+                ),
+                const SizedBox(width: 10),
+                if (!state.isLast)
+                  GestureDetector(
+                    onTap: () {
+                      context.read<TransactionBloc>().add(FetchNextEvent());
+                    },
+                    child: const Row(
+                      children: [Text('Next'), Icon(Icons.arrow_forward_ios)],
+                    ),
+                  )
+              ],
+            ),
+          ),
+          const SizedBox(height: 50),
         ],
       ),
     );
@@ -265,6 +314,24 @@ class TransactionPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  List<MarloTableColumn> transactionToTableColum(List<TransactionModel> data) {
+    List<MarloTableColumn> tableData = [];
+    for (var item in data) {
+      final table = MarloTableColumn(
+        name: item.description.isEmpty ? '--' : item.description,
+        amount: item.amount,
+        status: item.status.toLowerCase() ==
+                TransactionStatus.processed.name.toLowerCase()
+            ? TransactionStatus.processed
+            : TransactionStatus.processing,
+        source: item.sourceType,
+        createdBy: DateTime.now(),
+      );
+      tableData.add(table);
+    }
+    return tableData;
   }
 }
 

@@ -14,4 +14,5 @@ class MarloColors {
   static const Color euroFlagPrimary = Color(0xff0052B4);
   static const Color singaporeSecondary = Color(0xffF0F0F0);
   static const Color iconColor = Color(0xff75808A);
+  static const Color secondaryLight = Color(0xFF454547);
 }
