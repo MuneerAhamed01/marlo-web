@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sample/services/transaction_services.dart';
 import 'package:sample/utils/enums.dart';
-import 'package:sample/utils/extensions.dart';
 import 'package:sample/views/transaction_page/model/transaction_model.dart';
 import 'package:sample/views/transaction_page/utils/filter_service.dart';
 part 'transaction_bloc_event.dart';
@@ -16,6 +15,7 @@ class TransactionBloc extends Bloc<TransactionBlocEvent, TransactionBlocState> {
     on<GetTransactionEvent>(_getTransaction);
     on<FetchNextEvent>(_fetchNextPage);
     on<ChangePageSizeEvent>(_changePageSizeEvent);
+    on<FilterSourceTypeEvent>(_sourceTypeFilter);
     add(GetTransactionEvent());
   }
 
@@ -23,7 +23,6 @@ class TransactionBloc extends Bloc<TransactionBlocEvent, TransactionBlocState> {
       TransactionBlocEvent event, Emitter<TransactionBlocState> emit) async {
     emit(LoadingTransactionState(filtering: state.filtering));
     final listTransaction = await _transactionRepo.getTransaction();
-    print(state.filtering);
     if (listTransaction != null) {
       emit(
         LoadedTransaction(
@@ -37,9 +36,8 @@ class TransactionBloc extends Bloc<TransactionBlocEvent, TransactionBlocState> {
 
   void _fetchNextPage(
       FetchNextEvent event, Emitter<TransactionBlocState> emit) {
-
     final filteredList = _applyFilter();
-   
+
     final int offset =
         state.filtering[Filtering.pagination][PaginationEnum.offset];
     final int page = state.filtering[Filtering.pagination][PaginationEnum.page];
@@ -48,8 +46,7 @@ class TransactionBloc extends Bloc<TransactionBlocEvent, TransactionBlocState> {
     final isLast = to == transactionLength - 1;
     print('isLast :$isLast , page:($to) , length:(${transactionLength - 1})');
 
-    final newTransaction =
-        filteredList.getRange((offset * page), to).toList();
+    final newTransaction = filteredList.getRange((offset * page), to).toList();
     state.filtering[Filtering.pagination] = {
       PaginationEnum.offset: offset + 1,
       PaginationEnum.page: page
@@ -84,6 +81,42 @@ class TransactionBloc extends Bloc<TransactionBlocEvent, TransactionBlocState> {
       ),
     );
     //
+  }
+
+  void _sourceTypeFilter(
+      FilterSourceTypeEvent event, Emitter<TransactionBlocState> emit) {
+    final List<SourceType>? filter = state.filtering[Filtering.sourceType];
+    if (event.activateType != null) {
+      state.filtering[Filtering.sourceType] = [
+        if (filter != null) ...filter,
+        event.activateType!
+      ];
+    }
+    if (event.deactivateType != null) {
+      if (filter != null) {
+        (state.filtering[Filtering.sourceType] as List<SourceType>)
+            .remove(event.deactivateType!);
+      }
+      if ((state.filtering[Filtering.sourceType] as List).isEmpty) {
+        state.filtering[Filtering.sourceType] = null;
+      }
+    }
+
+    state.filtering[Filtering.pagination] = {
+      PaginationEnum.offset: 0,
+      PaginationEnum.page: state.paginatingPage
+    };
+    final filteredList = _applyFilter();
+    final newTransaction =
+        filteredList.take(min(state.paginatingPage, filteredList.length));
+    emit(
+      LoadedTransaction(
+        transaction: state.transaction,
+        filtered: newTransaction.toList(),
+        filtering: state.filtering,
+        isLast: newTransaction.length == filteredList.length,
+      ),
+    );
   }
 
   List<TransactionModel> _applyFilter() {

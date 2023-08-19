@@ -12,10 +12,9 @@ class ChangePageSizeEvent extends TransactionBlocEvent {
   ChangePageSizeEvent(this.pageSize);
 }
 
-class FilterSourceType extends TransactionBlocEvent {
-  final List<SourceType> activeSource;
-  final List<SourceType> removedSource;
+class FilterSourceTypeEvent extends TransactionBlocEvent {
+  SourceType? activateType;
+  SourceType? deactivateType;
 
-  FilterSourceType(
-      {this.activeSource = const [], this.removedSource = const []});
+  FilterSourceTypeEvent({this.activateType, this.deactivateType});
 }
