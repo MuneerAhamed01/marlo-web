@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sample/services/transaction_services.dart';
 import 'package:sample/utils/enums.dart';
@@ -16,6 +17,9 @@ class TransactionBloc extends Bloc<TransactionBlocEvent, TransactionBlocState> {
     on<FetchNextEvent>(_fetchNextPage);
     on<ChangePageSizeEvent>(_changePageSizeEvent);
     on<FilterSourceTypeEvent>(_sourceTypeFilter);
+    on<FilterCurrenciesEvent>(_currencyFilterEvent);
+    on<FilterStatusEvent>(_statusFilter);
+    on<FilterDateTimeRange>(_dateTimeFilter);
     add(GetTransactionEvent());
   }
 
@@ -119,14 +123,86 @@ class TransactionBloc extends Bloc<TransactionBlocEvent, TransactionBlocState> {
     );
   }
 
+  void _currencyFilterEvent(
+      FilterCurrenciesEvent event, Emitter<TransactionBlocState> emit) {
+    if (event.currencies.isNotEmpty) {
+      state.filtering[Filtering.currencies] = event.currencies;
+    } else {
+      state.filtering[Filtering.currencies] = null;
+    }
+
+    state.filtering[Filtering.pagination] = {
+      PaginationEnum.offset: 0,
+      PaginationEnum.page: state.paginatingPage
+    };
+    final filteredList = _applyFilter();
+    final newTransaction =
+        filteredList.take(min(state.paginatingPage, filteredList.length));
+    emit(
+      LoadedTransaction(
+        transaction: state.transaction,
+        filtered: newTransaction.toList(),
+        filtering: state.filtering,
+        isLast: newTransaction.length == filteredList.length,
+      ),
+    );
+  }
+
+  void _statusFilter(
+      FilterStatusEvent event, Emitter<TransactionBlocState> emit) {
+    if (event.status.isNotEmpty) {
+      state.filtering[Filtering.status] = event.status;
+    } else {
+      state.filtering[Filtering.status] = null;
+    }
+
+    state.filtering[Filtering.pagination] = {
+      PaginationEnum.offset: 0,
+      PaginationEnum.page: state.paginatingPage
+    };
+    final filteredList = _applyFilter();
+    final newTransaction =
+        filteredList.take(min(state.paginatingPage, filteredList.length));
+    emit(
+      LoadedTransaction(
+        transaction: state.transaction,
+        filtered: newTransaction.toList(),
+        filtering: state.filtering,
+        isLast: newTransaction.length == filteredList.length,
+      ),
+    );
+  }
+
+  void _dateTimeFilter(
+      FilterDateTimeRange event, Emitter<TransactionBlocState> emit) {
+    state.filtering[Filtering.time] = event.timeRange;
+
+    state.filtering[Filtering.pagination] = {
+      PaginationEnum.offset: 0,
+      PaginationEnum.page: state.paginatingPage
+    };
+    final filteredList = _applyFilter();
+    final newTransaction =
+        filteredList.take(min(state.paginatingPage, filteredList.length));
+    emit(
+      LoadedTransaction(
+        transaction: state.transaction,
+        filtered: newTransaction.toList(),
+        filtering: state.filtering,
+        isLast: newTransaction.length == filteredList.length,
+      ),
+    );
+  }
+
   List<TransactionModel> _applyFilter() {
     List<TransactionModel> filteringList = state.transaction;
     final hasSourceType =
         state.filtering[Filtering.sourceType] as List<SourceType>?;
     final currencies = state.filtering[Filtering.currencies] as List<String>?;
-    final timeRange = state.filtering[Filtering.time] as DateTime?;
+    final timeRange = state.filtering[Filtering.time] as DateTimeRange?;
     final min = state.filtering[Filtering.min] as int?;
     final max = state.filtering[Filtering.max] as int?;
+    final status = state.filtering[Filtering.status] as List<String>?;
 
     if (hasSourceType?.isNotEmpty ?? false) {
       filteringList = filteringList
@@ -146,8 +222,20 @@ class TransactionBloc extends Bloc<TransactionBlocEvent, TransactionBlocState> {
           .toList();
     }
 
+    if (status?.isNotEmpty ?? false) {
+      filteringList = filteringList
+          .toSet()
+          .intersection(
+              _filterService.statusFilter(filteringList, status!).toSet())
+          .toList();
+    }
+
     if (timeRange != null) {
-      //TODO Need to implement
+      filteringList = filteringList
+          .toSet()
+          .intersection(
+              _filterService.dateFilter(filteringList, timeRange).toSet())
+          .toList();
     }
 
     if (min != null || max != null) {

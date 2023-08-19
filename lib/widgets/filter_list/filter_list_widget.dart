@@ -6,7 +6,9 @@ import 'package:sample/utils/enums.dart';
 import 'package:sample/utils/icons.dart';
 import 'package:sample/utils/styles.dart';
 import 'package:sample/views/transaction_page/bloc/transaction_bloc_bloc.dart';
+import 'package:sample/views/transaction_page/utils/transaction_country.dart';
 import 'package:sample/widgets/action_menu.dart';
+import 'package:sample/widgets/filter_list/date_picker.dart';
 import 'package:sample/widgets/marlo_button.dart';
 
 class FilterListWidget extends StatelessWidget {
@@ -58,27 +60,42 @@ class FilterListWidget extends StatelessWidget {
                 ),
                 ActionMenu(
                   title: 'Currencies',
-                  menuItems: [
-                    for (int i = 0; i < 10; i++) 'menu $i',
-                  ],
-                  onTap: (val) {},
-                  selectedItems: [],
+                  menuItems: currencies,
+                  onTap: (val) {
+                    context
+                        .read<TransactionBloc>()
+                        .add(FilterCurrenciesEvent(currencies: val));
+                  },
+                  selectedItems:
+                      state.filtering[Filtering.currencies] as List<String>? ??
+                          [],
                 ),
                 ActionMenu(
                   title: 'Statuses',
-                  menuItems: [
-                    for (int i = 0; i < 10; i++) 'menu $i',
-                  ],
-                  onTap: (val) {},
-                  selectedItems: [],
+                  menuItems: const ['PENDING', 'SETTLED', 'CANCELLED'],
+                  onTap: (val) {
+                    context
+                        .read<TransactionBloc>()
+                        .add(FilterStatusEvent(status: val));
+                  },
+                  selectedItems:
+                      state.filtering[Filtering.status] as List<String>? ?? [],
                 ),
-                ActionMenu(
+                MarloButton(
                   title: 'Time range',
-                  menuItems: [
-                    for (int i = 0; i < 10; i++) 'menu $i',
-                  ],
-                  onTap: (val) {},
-                  selectedItems: [],
+                  onTap: () async {
+                    final date = await showPopUp(context);
+                    if (date != null) {
+                      // ignore: use_build_context_synchronously
+                      context
+                          .read<TransactionBloc>()
+                          .add(FilterDateTimeRange(timeRange: date));
+                    }
+                  },
+                  size: ButtonSize.small,
+                  style: MarloButtonStyle.secondary,
+                  icon: Icons.arrow_drop_down,
+                  axis: Direction.right,
                 ),
                 Container(
                   height: 36,

@@ -13,8 +13,29 @@ class ChangePageSizeEvent extends TransactionBlocEvent {
 }
 
 class FilterSourceTypeEvent extends TransactionBlocEvent {
-  SourceType? activateType;
-  SourceType? deactivateType;
+  final SourceType? activateType;
+  final SourceType? deactivateType;
 
   FilterSourceTypeEvent({this.activateType, this.deactivateType});
+}
+
+class FilterCurrenciesEvent extends TransactionBlocEvent {
+  final List<String> currencies;
+  FilterCurrenciesEvent({
+    required this.currencies,
+  });
+}
+
+class FilterStatusEvent extends TransactionBlocEvent {
+  List<String> status;
+  FilterStatusEvent({
+    required this.status,
+  });
+}
+
+class FilterDateTimeRange extends TransactionBlocEvent {
+  final DateTimeRange? timeRange;
+  FilterDateTimeRange({
+    this.timeRange,
+  });
 }

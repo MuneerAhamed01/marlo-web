@@ -27,10 +27,8 @@ class TransactionPage extends StatelessWidget {
         if (state is LoadingTransactionState) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (state.filteredList.isEmpty) {
-          return const Center(child: Text('Error'));
-        }
-        if (state is LoadedTransaction && state.filteredList.isNotEmpty) {
+
+        if (state is LoadedTransaction) {
           return _buildLayout(state, context);
         }
         return const Center(child: Text('Error'));
@@ -340,21 +338,10 @@ class TransactionPage extends StatelessWidget {
             ? TransactionStatus.processed
             : TransactionStatus.processing,
         source: item.sourceType,
-        createdBy: DateTime.now(),
+        createdBy: item.createdAt,
       );
       tableData.add(table);
     }
     return tableData;
   }
 }
-
-final rows = [
-  for (int i = 0; i < 10; i++)
-    MarloTableColumn(
-      name: '$i Name',
-      amount: '{$i}0000',
-      status: TransactionStatus.processed,
-      source: 'Payout',
-      createdBy: DateTime.now(),
-    ),
-];

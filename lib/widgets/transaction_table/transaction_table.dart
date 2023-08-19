@@ -39,45 +39,52 @@ class MarloTable extends StatelessWidget {
               ],
             ),
           ),
-          for (int i = 0; i < rows.length; i++)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 48),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: _TransactionName(
-                      name: rows[i].name,
-                      type: TransactionType.debit,
-                    ),
-                  ),
-                  Expanded(
-                    child: _buildRowText(rows[i].amount),
-                  ),
-                  Expanded(
-                    child: _TransactionStatus(status: rows[i].status),
-                  ),
-                  Expanded(
-                    child: Text(
-                      rows[i].source,
-                      style: Styles.primary.copyWith(
-                          fontWeight: FontWeight.w400,
-                          color: MarloColors.subTitle,
-                          fontSize: 14),
-                    ),
-                  ),
-                  Expanded(
+          if (rows.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(24),
+              child: Text('No data found'),
+            )
+          else
+            for (int i = 0; i < rows.length; i++)
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 48),
+                child: Row(
+                  children: [
+                    Expanded(
                       flex: 2,
+                      child: _TransactionName(
+                        name: rows[i].name,
+                        type: TransactionType.debit,
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildRowText(rows[i].amount),
+                    ),
+                    Expanded(
+                      child: _TransactionStatus(status: rows[i].status),
+                    ),
+                    Expanded(
                       child: Text(
-                        _parseDateString(rows[i].createdBy),
+                        rows[i].source,
                         style: Styles.primary.copyWith(
                             fontWeight: FontWeight.w400,
                             color: MarloColors.subTitle,
                             fontSize: 14),
-                      ))
-                ],
-              ),
-            )
+                      ),
+                    ),
+                    Expanded(
+                        flex: 2,
+                        child: Text(
+                          _parseDateString(rows[i].createdBy),
+                          style: Styles.primary.copyWith(
+                              fontWeight: FontWeight.w400,
+                              color: MarloColors.subTitle,
+                              fontSize: 14),
+                        ))
+                  ],
+                ),
+              )
         ],
       ),
     );
