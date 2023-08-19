@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sample/utils/colors.dart';
@@ -11,11 +13,26 @@ import 'package:sample/widgets/action_menu.dart';
 import 'package:sample/widgets/filter_list/date_picker.dart';
 import 'package:sample/widgets/marlo_button.dart';
 
-class FilterListWidget extends StatelessWidget {
+class FilterListWidget extends StatefulWidget {
   const FilterListWidget({super.key});
 
+  @override
+  State<FilterListWidget> createState() => _FilterListWidgetState();
+}
+
+class _FilterListWidgetState extends State<FilterListWidget> {
   TransactionBlocState state(BuildContext context) =>
       context.read<TransactionBloc>().state;
+
+  final TextEditingController _minController = TextEditingController();
+  final TextEditingController _maxController = TextEditingController();
+
+  @override
+  void dispose() {
+    _minController.dispose();
+    _maxController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,28 +128,15 @@ class FilterListWidget extends StatelessWidget {
                     children: [
                       SvgPicture.asset(MarloIcons.dollar),
                       const SizedBox(width: 8),
-                      Container(
-                        height: 20,
-                        width: 1,
-                        color: MarloColors.buttonPrimary.withOpacity(.2),
+                      ..._buildTextfield(
+                        'Min amount',
+                        _minController,
                       ),
-                      SizedBox(
-                        width: 70,
-                        height: 20,
-                        child: TextFormField(
-                          maxLines: 1,
-                          decoration: InputDecoration(
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 13)
-                                    .copyWith(left: 8),
-                            border: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            errorBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
-                          ),
-                        ),
-                      )
+                      const SizedBox(width: 8),
+                      ..._buildTextfield(
+                        'Max amount',
+                        _maxController,
+                      ),
                     ],
                   ),
                 )
@@ -148,6 +152,50 @@ class FilterListWidget extends StatelessWidget {
         );
       },
     );
+  }
+
+  List<Widget> _buildTextfield(
+      String hintText, TextEditingController controller) {
+    return [
+      Container(
+        height: 20,
+        width: 1,
+        color: MarloColors.buttonPrimary.withOpacity(.2),
+      ),
+      SizedBox(
+        width: 80,
+        height: 20,
+        child: TextFormField(
+          onChanged: (value) {
+            final minAmount = int.tryParse(_minController.text);
+            final maxAmount = int.tryParse(_maxController.text);
+            context.read<TransactionBloc>().add(
+                  FilterAmountEvent(
+                    min: minAmount,
+                    max: maxAmount,
+                  ),
+                );
+          },
+          controller: controller,
+          scrollPhysics: const AlwaysScrollableScrollPhysics(),
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(7),
+            FilteringTextInputFormatter.digitsOnly
+          ],
+          decoration: InputDecoration(
+            hintText: hintText,
+            hintStyle: Styles.primary.copyWith(fontSize: 12),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 13).copyWith(left: 8),
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            errorBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
+          ),
+        ),
+      )
+    ];
   }
 
   bool _showActiveIconInSourceType(BuildContext context, SourceType type) {

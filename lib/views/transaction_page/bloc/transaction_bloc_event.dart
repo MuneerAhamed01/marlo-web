@@ -39,3 +39,12 @@ class FilterDateTimeRange extends TransactionBlocEvent {
     this.timeRange,
   });
 }
+
+class FilterAmountEvent extends TransactionBlocEvent {
+  final int? min;
+  final int? max;
+  FilterAmountEvent({
+    this.max,
+    this.min,
+  });
+}

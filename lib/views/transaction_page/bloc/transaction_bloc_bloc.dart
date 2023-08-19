@@ -20,6 +20,7 @@ class TransactionBloc extends Bloc<TransactionBlocEvent, TransactionBlocState> {
     on<FilterCurrenciesEvent>(_currencyFilterEvent);
     on<FilterStatusEvent>(_statusFilter);
     on<FilterDateTimeRange>(_dateTimeFilter);
+    on<FilterAmountEvent>(_filterAmount);
     add(GetTransactionEvent());
   }
 
@@ -194,6 +195,28 @@ class TransactionBloc extends Bloc<TransactionBlocEvent, TransactionBlocState> {
     );
   }
 
+  void _filterAmount(
+      FilterAmountEvent event, Emitter<TransactionBlocState> emit) {
+    state.filtering[Filtering.min] = event.min;
+    state.filtering[Filtering.max] = event.max;
+
+    state.filtering[Filtering.pagination] = {
+      PaginationEnum.offset: 0,
+      PaginationEnum.page: state.paginatingPage
+    };
+    final filteredList = _applyFilter();
+    final newTransaction =
+        filteredList.take(min(state.paginatingPage, filteredList.length));
+    emit(
+      LoadedTransaction(
+        transaction: state.transaction,
+        filtered: newTransaction.toList(),
+        filtering: state.filtering,
+        isLast: newTransaction.length == filteredList.length,
+      ),
+    );
+  }
+
   List<TransactionModel> _applyFilter() {
     List<TransactionModel> filteringList = state.transaction;
     final hasSourceType =
@@ -239,7 +262,12 @@ class TransactionBloc extends Bloc<TransactionBlocEvent, TransactionBlocState> {
     }
 
     if (min != null || max != null) {
-      //TODO need to implement
+      filteringList = filteringList
+          .toSet()
+          .intersection(_filterService
+              .filterMinMax(filteringList, maxValue: max, minValue: min)
+              .toSet())
+          .toList();
     }
     return filteringList;
   }

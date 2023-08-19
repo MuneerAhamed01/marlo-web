@@ -65,4 +65,27 @@ class FilterService {
 
     return (dateToCheck.isAfter(startDate) && dateToCheck.isBefore(endDate));
   }
+
+  List<TransactionModel> filterMinMax(List<TransactionModel> list,
+      {int? minValue, int? maxValue}) {
+    if (minValue != null && maxValue != null) {
+      return list
+          .where((value) =>
+              double.parse(value.amount.replaceAll(',', '')) >= minValue &&
+              double.parse(value.amount.replaceAll(',', '')) <= maxValue)
+          .toList();
+    } else if (minValue != null) {
+      return list
+          .where((value) =>
+              double.parse(value.amount.replaceAll(',', '')) >= minValue)
+          .toList();
+    } else if (maxValue != null) {
+      return list
+          .where((value) =>
+              double.parse(value.amount.replaceAll(',', '')) <= maxValue)
+          .toList();
+    } else {
+      return list;
+    }
+  }
 }
