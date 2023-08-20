@@ -43,6 +43,7 @@ dependencies:
   intl: ^0.18.1
   dio: ^5.3.2
   syncfusion_flutter_datepicker: ^22.2.9
+  firebase_core: ^2.15.1
 
 dev_dependencies:
   flutter_test:

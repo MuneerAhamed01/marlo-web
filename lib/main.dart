@@ -1,9 +1,15 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sample/routes/beamer_parser.dart';
 import 'package:sample/routes/root_delegate.dart';
 import 'package:url_strategy/url_strategy.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   setPathUrlStrategy();
   runApp(const MyApp());
 }
