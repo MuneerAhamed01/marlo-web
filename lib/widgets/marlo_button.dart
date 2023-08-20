@@ -19,6 +19,7 @@ class MarloButton extends StatelessWidget {
     this.icon,
     this.axis = Direction.left,
     this.size = ButtonSize.normal,
+    this.circularImage,
   }) : assert(icon == null || svg == null);
   final String title;
   final Function() onTap;
@@ -27,7 +28,7 @@ class MarloButton extends StatelessWidget {
   final IconData? icon;
   final Direction axis;
   final ButtonSize size;
-
+  final Widget? circularImage;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +39,7 @@ class MarloButton extends StatelessWidget {
       svg: svg,
       style: style,
       size: size,
+      circularImage: circularImage,
     );
     return InkWell(
       borderRadius: BorderRadius.circular(4),
@@ -83,6 +85,7 @@ class _ButtonText extends StatelessWidget {
     this.icon,
     this.size = ButtonSize.normal,
     required this.style,
+    this.circularImage,
   });
 
   final Direction axis;
@@ -91,6 +94,7 @@ class _ButtonText extends StatelessWidget {
   final IconData? icon;
   final ButtonSize size;
   final MarloButtonStyle style;
+  final Widget? circularImage;
 
   bool get _hasIcon => svg != null || icon != null;
   double get _textSize => size == ButtonSize.normal ? 14 : 12;
@@ -102,6 +106,10 @@ class _ButtonText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        if (circularImage != null) ...[
+          circularImage!,
+          const SizedBox(width: 2)
+        ],
         if (axis == Direction.left && _hasIcon) _buildIcon(),
         Text(
           title,

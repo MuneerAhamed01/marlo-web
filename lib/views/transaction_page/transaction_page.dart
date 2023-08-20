@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sample/utils/colors.dart';
+import 'package:sample/utils/date_time_functions.dart';
+import 'package:sample/utils/enums.dart';
 import 'package:sample/utils/flags.dart';
 import 'package:sample/utils/icons.dart';
 import 'package:sample/utils/styles.dart';
@@ -10,6 +12,7 @@ import 'package:sample/widgets/filter_list/filter_list_widget.dart';
 import 'package:sample/widgets/pagination_menu.dart';
 import 'package:sample/widgets/payout_button.dart';
 import 'package:sample/widgets/semi_circle.dart';
+import 'package:sample/widgets/show_filterd_list.dart';
 import 'package:sample/widgets/transaction_table/models/table_colums.dart';
 import 'package:sample/widgets/transaction_table/transaction_table.dart';
 
@@ -75,7 +78,8 @@ class TransactionPage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _wrapWithPadding(const FilterListWidget()),
-          const SizedBox(height: 72),
+          const SizedBox(height: 16),
+          _wrapWithPadding(ShowFilterLists(menuItems: _menuItems(state))),
           _wrapWithPadding(
             MarloTable(
               rows: transactionToTableColum(state.filteredList),
@@ -215,10 +219,10 @@ class TransactionPage extends StatelessWidget {
     );
   }
 
-  Widget _flagInAsset(String image) {
+  Widget _flagInAsset(String image, [double? radius]) {
     return CircleAvatar(
       backgroundImage: NetworkImage(image),
-      radius: 27,
+      radius: radius ?? 27,
     );
   }
 
@@ -325,6 +329,45 @@ class TransactionPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  List<ShowMenuItems> _menuItems(LoadedTransaction state) {
+    final filterList = state.filtering;
+    final List<ShowMenuItems> showCaseMenu = [];
+
+    if (filterList[Filtering.currencies] != null) {
+      for (var element in (filterList[Filtering.currencies] as List<String>)) {
+        final menu = ShowMenuItems(
+          filterType: Filtering.currencies,
+          title: element,
+          flag: element == 'GBP'
+              ? CountryFlags.gpb
+              : element == 'USD'
+                  ? CountryFlags.usd
+                  : null,
+          flagName: element,
+        );
+        showCaseMenu.add(menu);
+      }
+    }
+    if (filterList[Filtering.status] != null) {
+      for (var element in (filterList[Filtering.status] as List<String>)) {
+        final menu = ShowMenuItems(
+          filterType: Filtering.status,
+          title: element,
+        );
+        showCaseMenu.add(menu);
+      }
+    }
+    if (filterList[Filtering.time] != null) {
+      final menu = ShowMenuItems(
+        filterType: Filtering.time,
+        title: formatDateTimeRange(filterList[Filtering.time] as DateTimeRange),
+      );
+      showCaseMenu.add(menu);
+    }
+
+    return showCaseMenu;
   }
 
   List<MarloTableColumn> transactionToTableColum(List<TransactionModel> data) {

@@ -53,8 +53,21 @@ class _FilterListWidgetState extends State<FilterListWidget> {
               ...[
                 MarloButton(
                   title: 'All',
-                  onTap: () {},
+                  onTap: () {
+                    context.read<TransactionBloc>().add(ClearAllFilterEvent());
+                    _maxController.clear();
+                    _minController.clear();
+                  },
                   size: ButtonSize.small,
+                  style: context
+                          .read<TransactionBloc>()
+                          .state
+                          .filtering
+                          .keys
+                          .toList()
+                          .any((element) => element != Filtering.pagination)
+                      ? MarloButtonStyle.secondary
+                      : MarloButtonStyle.primary,
                   icon: Icons.check_circle,
                 ),
                 MarloButton(

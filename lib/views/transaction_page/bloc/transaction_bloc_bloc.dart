@@ -21,6 +21,7 @@ class TransactionBloc extends Bloc<TransactionBlocEvent, TransactionBlocState> {
     on<FilterStatusEvent>(_statusFilter);
     on<FilterDateTimeRange>(_dateTimeFilter);
     on<FilterAmountEvent>(_filterAmount);
+    on<ClearAllFilterEvent>(_clearAllFilter);
     add(GetTransactionEvent());
   }
 
@@ -213,6 +214,27 @@ class TransactionBloc extends Bloc<TransactionBlocEvent, TransactionBlocState> {
         filtered: newTransaction.toList(),
         filtering: state.filtering,
         isLast: newTransaction.length == filteredList.length,
+      ),
+    );
+  }
+
+  void _clearAllFilter(
+      ClearAllFilterEvent event, Emitter<TransactionBlocState> emit) {
+    state.filtering.removeWhere((k, v) => k != Filtering.pagination);
+
+    state.filtering[Filtering.pagination] = {
+      PaginationEnum.offset: 0,
+      PaginationEnum.page: state.paginatingPage
+    };
+    final newTransaction = state.transaction
+        .take(min(state.paginatingPage, state.transaction.length));
+
+    emit(
+      LoadedTransaction(
+        transaction: state.transaction,
+        filtered: newTransaction.toList(),
+        filtering: state.filtering,
+        isLast: newTransaction.length == state.transaction.length,
       ),
     );
   }

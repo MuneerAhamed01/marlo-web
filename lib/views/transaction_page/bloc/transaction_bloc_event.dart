@@ -48,3 +48,5 @@ class FilterAmountEvent extends TransactionBlocEvent {
     this.min,
   });
 }
+
+class ClearAllFilterEvent extends TransactionBlocEvent {}
