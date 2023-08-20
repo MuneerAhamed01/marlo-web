@@ -16,7 +16,7 @@ class SideBarLocations extends BeamLocation<BeamState> {
         key: ValueKey(home),
         name: homePath,
         child: Center(
-          child: Text('Not currently'),
+          child: Text('On development'),
         ),
       )
     ];

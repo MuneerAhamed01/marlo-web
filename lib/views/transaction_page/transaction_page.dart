@@ -376,10 +376,9 @@ class TransactionPage extends StatelessWidget {
       final table = MarloTableColumn(
         name: item.description.isEmpty ? '--' : item.description,
         amount: item.amount,
-        status: item.status.toLowerCase() ==
-                TransactionStatus.processed.name.toLowerCase()
-            ? TransactionStatus.processed
-            : TransactionStatus.processing,
+        status: item.status.toUpperCase() == 'PENDING'
+            ? TransactionStatus.processing
+            : TransactionStatus.processed,
         source: item.sourceType,
         createdBy: item.createdAt,
       );

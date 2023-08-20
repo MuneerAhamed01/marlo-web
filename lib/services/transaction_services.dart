@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+
 import '../views/transaction_page/model/transaction_model.dart';
 import 'base_service.dart';
 
@@ -16,8 +19,9 @@ class TransactionService {
           .map((e) => TransactionModel.fromJson(e))
           .toList();
     } catch (e) {
-      print(e);
-      return null;
+      return (jsonDecode(mockResponse)['response']['data'] as List)
+          .map((e) => TransactionModel.fromJson(e))
+          .toList();
     }
   }
 }
